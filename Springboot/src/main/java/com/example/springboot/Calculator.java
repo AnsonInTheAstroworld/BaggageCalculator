@@ -38,9 +38,8 @@ public class Calculator {
         return Result.success();
     }
 
-    @PostMapping("/special")
-    public Result<?> SaveSpecialBaggage(@RequestBody SpecialBaggage baggage){
-        switch (baggage.getType()){
+    public String SwitchType(String type){
+        switch (type){
             case "电动轮椅":
             case "电动代步工具":
             case "手动折叠轮椅":
@@ -50,7 +49,7 @@ public class Calculator {
             case "持续正压呼吸机（CPAP）":
             case "其它内含锂电池的辅助设备":
             case "服务犬（包括：导盲犬、助听犬、辅助犬等）":
-                baggage.setType("Free");break;
+                return "Free";
             case "高尔夫球包":
             case "保龄球":
             case "滑翔伞/降落伞":
@@ -63,19 +62,19 @@ public class Calculator {
             case "网球用具":
             case "登山用具":
             case "自行车":
-                baggage.setType("Sports1");break;
+                return "Sports1";
             case "皮划艇/独木舟":
             case "悬挂式滑翔运动用具":
             case "雪橇/水撬":
             case "冲浪板":
             case "风帆冲浪用具":
             case "橡皮艇或船":
-                baggage.setType("Sports2");break;
+                return "Sports2";
             case "撑杆":
             case "标枪":
             case "单独包装的划船用具或浆":
             case "骑马用具":
-                baggage.setType("Sports3");break;
+                return "Sports3";
             case "睡袋":
             case "背包":
             case "野营用具":
@@ -83,19 +82,26 @@ public class Calculator {
             case "乐器":
             case "辅助设备（非残疾、伤、病旅客托运）":
             case "可折叠婴儿床":
-                baggage.setType("Other1");break;
+                return "Other1";
             case "小型电器或仪器":
             case "媒体设备":
-                baggage.setType("Other2");break;
+                return "Other2";
             case "可作为行李运输的枪支":
-                baggage.setType("Other3");break;
+                return "Other3";
             case "可作为行李运输的子弹":
-                baggage.setType("Other4");break;
+                return "Other4";
             case "小动物（仅限家庭驯养的猫、狗）":
-                baggage.setType("Other5");break;
+                return "Other5";
+            default:
+                return type;
         }
+    }
+
+    @PostMapping("/special")
+    public Result<?> SaveSpecialBaggage(@RequestBody SpecialBaggage baggage){
+        baggage.setType(SwitchType(baggage.getType()));
         SpecialBaggageList.put(baggage.getIndex(),baggage);
-        return Result.success();
+        return Result.success(baggage.getType());
     }
 
     @DeleteMapping("/special/{index}")
@@ -176,7 +182,7 @@ public class Calculator {
         }
     }
 
-    private BaggageSystem GetBaggageSystem(String start,String destination){
+    public BaggageSystem GetBaggageSystem(String start,String destination){
         switch (start){
             case "中国境内（除港澳台）":
                 if ("中国境内（除港澳台）".equals(destination)) {
@@ -246,7 +252,7 @@ public class Calculator {
         }
     }
 
-    private Area GetArea(String start,String destination){
+    public Area GetArea(String start,String destination){
         switch (start){
             case "美洲（除美国、加拿大外）":
                 switch (destination){
